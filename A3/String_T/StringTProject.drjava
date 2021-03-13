@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<drjava version="drjava-20190813-220051">
+  <project autorefresh="false" build="" manifest="" root="" work="">
+    <createjar file="String_T.jar" flags="8"/>
+    <source>
+      <file active="true" name="MyStringT.java" package="String_T" timestamp="13-Mar-2021 04:30:44">
+        <select from="19" to="19"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="StringT.java" package="String_T" timestamp="13-Mar-2021 04:34:20">
+        <select from="19" to="19"/>
+        <scroll column="0" row="0"/>
+      </file>
+      <file name="StringTException.java" package="String_T" timestamp="13-Mar-2021 04:35:18">
+        <select from="19" to="19"/>
+        <scroll column="0" row="0"/>
+      </file>
+    </source>
+    <included/>
+    <excluded/>
+    <collapsed/>
+    <classpath/>
+    <breakpoints/>
+    <watches/>
+    <bookmarks/>
+    <preferences/>
+  </project>
+</drjava>
