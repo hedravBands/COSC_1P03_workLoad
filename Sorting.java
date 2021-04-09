@@ -3,7 +3,6 @@ package A5;
 import BasicIO.*;            // for IO classes
 import java.util.Comparator; // for the 3 implementations 
 
-import A5.BrickWidthComparator;
 
 /** This class is a program that opens a input data file, 
   * sort data by Content, Height, and Width, in this order. Then, write the sorted data
