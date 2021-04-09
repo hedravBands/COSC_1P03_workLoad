@@ -1,115 +1,128 @@
 package A5;
 
-import BasicIO.*;                // for IO classes
-import static java.lang.Math.*;  // for math constants and functions
+import BasicIO.*;            // for IO classes
+import java.util.Comparator; // for the 3 implementations 
 
-/** This class is a program to open input data files, sort data and write to output data file
+import A5.BrickWidthComparator;
+
+/** This class is a program that opens a input data file, 
+  * sort data by Content, Height, and Width, in this order. Then, write the sorted data
+  * to output an ouput data file in the same folder with "Result" appended in the oririnal filename.
   * @author Heduin R. B. de Morais (Brock_ID 6967483, Campus_ID hr19ut, Lab 12) 
   * @version 1.0 (Apr. 2021)
-  * new concepts: Grid-field, Comparator, Sorting, Subsorting.
+  * New concepts: Gridfields, Comparator, Sorting, Subsorting.
+  * @param wall Brick[] containing a list of triplets(w, h, c) as Brick to be stored.
+  * @param filename String added to sequentially process all 10 input gridfields w/o user intervention
+  * Please read comments above main function.
 */
 
 public class Sorting { 
-  
- 
-  //private ASCIIOutputFile output;//to write to a new .txt file
-
-  public  Sorting ()  { //throws InterruptedException {
+  //general array per input file
+  public Brick[] wall;
+  public String filename;
+   
+  //constructor
+  public  Sorting (int counter)  { 
+    //format filename
+    filename = "gridfields" + String.format("%02d", counter);
+    //open input file
     ASCIIDataFile input;//to read from a .txt file 
-    ASCIIOutputFile output; //to write to a .txt file
-    input = new ASCIIDataFile("input.txt");
-    output = new ASCIIOutputFile("output.txt");
+    input = new ASCIIDataFile("./gridfields/"+filename+".txt");
     
-    int nCases = input.readInt(); //number of cases
-    System.out.println(nCases);
-    input.nextLine(); // burn line
- 
-   int aw[] = new int[nCases];
-   int ah[] = new int[nCases];
-   int ac[] = new int[nCases];
-    for (int i = 0; i < nCases; ++i){
-      aw[i] = input.readInt();
-      ah[i] = input.readInt();
-      ac[i] = (int)input.readC();
-      for (int j = 0; j < ah[i]; ++j){
+    //read number of cases
+    int nCases = input.readInt(); 
+    //burn blank line
+    input.nextLine(); 
+    //build a Wall with nCases Bricks
+    wall = new Brick[nCases];
+    //receive the input data file
+    for (int i = 0; i < nCases; i++){
+      wall[i] = new Brick(input.readInt(), input.readInt(), input.readC());
+      for (int j = 0; j < wall[i].getH(); j++){ 
+        // skip repeated lines
         input.nextLine();
       }
-      input.readC(); //burn line    
-      System.out.println(aw[i] + " " + ah[i] + " " + (char)ac[i]);
-    }//for input
+      //burn blank line
+      input.readC();
+      //debug only
+      //wall[i].printMe();
+    }//for 
     input.close();
-    
+
+    //start sorting accordinly to Assign5 requests    
+    wall = InsertionSort(wall, new BrickContentComparator());
+    wall = InsertionSort(wall, new BrickHeightComparator());
+    wall = InsertionSort(wall, new BrickWidthComparator());
+
+    //write wall fully sorted to file
+    writeOutputFile(wall, nCases);
+   
+  };  // constructor
+  
+/** 
+ * This method sorts List of Bricks accordingly to the chosen comparator
+ * @param block List of Bricks to be sorted
+ * @param comparator Comparator implementation by a given key (w, h or c)
+ * Returns List of Bricks after sorting by Insert Sorting algorithm
+ */
+   private Brick[] InsertionSort(Brick[] block, Comparator<Brick>comparator){
+     Brick key;
+       for(int i = 1; i < block.length; i++){
+         key = block[i];
+         int j = i - 1;
+         //move elements
+         while(j >= 0 && (comparator.compare(block[j], key) > 0 )) {
+            block[j+1] = block[j];         
+            j--;
+         }
+         block[j+1] = key;
+       }
+       return block;
+     }
+ 
+   /**
+    * This method writes a List of Bricks to an output file after being fully sorted.
+    * It chooses the output filename bases on the input filename by appending "Result" w/o user intervention.
+    * @param block List of Bricks fully sorted
+    * @param nCases int with a number of Bricks to be written to file.
+    */  
+  public void writeOutputFile(Brick[] block, int nCases){
+    ASCIIOutputFile output =  new ASCIIOutputFile("./gridfields/"+filename+"Result.txt");
+    //initial format
     output.writeInt(nCases);
     output.newLine();
     output.newLine();
+    //writes Width, Heith, then Content
     for (int i = 0; i < nCases; ++i){
-      output.writeInt(aw[i]);
-      output.writeInt(ah[i]);
+      output.writeInt(block[i].getW());
+      output.writeInt(block[i].getH());
       output.newLine();
-      for (int m = 0; m < ah[i]; ++m){
-        for(int n = 0; n < aw[i]; ++n){
-          output.writeC((char)ac[i]);
+      //Height of Content
+      for (int m = 0; m < block[i].getH(); m++){
+        //Width of Content
+        for(int n = 0; n < block[i].getW(); n++){
+          output.writeC(block[i].getC());
         }// for n(width output)
         output.newLine();
-      } //for m(heigt output)    
+      } //for m(heigth output)    
       output.newLine();
     } // for nCases output
-    
-    output.close();
-    
-    
-//    for (;;){
-//      // READ INT FROM FILE
-//      myLittleInt = input.readInt(); 
-//      if ( input.isEOF() ) { break;}
-//    
-//    // SEARCH THIS INT IN CODEBOOK
-//     //iterate all codeBook with 128 Linked Lists
-//      for (int k = 0; k < 128; k++) {
-//        foundIt = false;
-//        foundIt = SearchList(CodeBook[k], myLittleInt); 
-//        //white the index to file
-//        if (foundIt) {
-//          output.writeC( (char) k );
-//          break; 
-//        }
-//      }
-//    }    
-//    input.close();
-//    output.close();
-//  
-  };  // constructor
-  
-  
-//  // This method returns a random number from 0 to maxNumber
-//  //@param maxNumber int number of possibilities
-//  //@return int from 0 to (max - 1), in a  total of (maxNumber) possibities
-//  private int FetchRandomNumber (int maxNumber) {
-//    return (int)(Math.random()*100000) % maxNumber;
-//  }
-//  
-//  
-//  
-//  // This method adds a Linked List to an output file, node by node until node.next is null)
-//  //@param node head of a linked list
-//  //@param serial int index of that list
-//  private void FileList (Node node, int serial){ 
-//     //output.writeString("List #" + serial + " with " + node.item + " items: [");
-//     while (node.next != null){
-//       node = node.next;
-//       output.writeInt(node.item);
-//     }
-//    //output.writeString("]");
-//    output.newLine();
-//  }
-//  
-  
-  
-// main function
+     output.close();
+  }
 
-public static void main ( String[] args ) { Sorting s = new Sorting(); };
+// main function
+/**
+ * This is the Main function, processing exactly 10 input files for all cases w/o user intervention.
+ * If T.A./Marker needs to test a particular file, please do as follows: 
+ * Add the file as "./gridfields/gridfields11.txt ,  the 11th case.
+ * Please change below:  i <= 10  to  i<= 11  .
+ * That's it. It should appear as "./gridfields/gridfields11Result.txt"
+ */
+  public static void main ( String[] args ) { 
+    for (int i = 1; i<=10; i++) { Sorting s = new Sorting(i); };
+    System.out.println("Yay! All files processed!");
+    System.out.println("Check out the folder \"gridfields\".");
+    System.out.println("Best regards, HR19UT.");
+  }
 
 } // Sorting
-    
-
- 
